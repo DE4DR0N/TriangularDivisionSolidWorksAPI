@@ -30,7 +30,7 @@ namespace lab7
 
         private void btnBuild_Click(object sender, EventArgs e)
         {
-            if (ObtainVaribles() == false) return;
+            if (ObtainVariables() == false) return;
             CheckDrawing();
             CreatePoints(_p1X, _p1Y, _p1Z, _p7X, _p7Y, _p7Z);
             Drawing();
@@ -181,7 +181,7 @@ namespace lab7
             return swFeatureManager != null;
         }
 
-        private bool ObtainVaribles()
+        private bool ObtainVariables()
         {
             try
             {
