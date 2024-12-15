@@ -16,12 +16,11 @@ namespace lab7
         private Feature skFeat;
         private Feature footing;
         private const string FrontView = "Спереди", TopView = "Сверху", RightView = "Справа";
-        private double length, width, height, Spc2, _marginOutX, _marginOutY, _p1X, _p1Y, _p1Z, _p7X, _p7Y, _p7Z;
-        private bool res;
-        private SketchManager skm;
-        private SldWorks swApp;
-        private IModelDoc2 swModel;
-        private SelectionMgr swSelMgr;
+        private double length, width, height, _marginInner, _marginOutX, _marginOutY, _p1X, _p1Y, _p1Z, _p7X, _p7Y, _p7Z;
+        private SketchManager _skm;
+        private SldWorks _swApp;
+        private IModelDoc2 _swModel;
+        private SelectionMgr _swSelMgr;
 
         public FormMain()
         {
@@ -43,12 +42,12 @@ namespace lab7
             //feature.Select(false);
             //Feature swSubFeature = feature.GetFirstSubFeature() as Feature;
 
-            //swModel.EditDelete();
-            //swModel.ClearSelection();
+            //_swModel.EditDelete();
+            //_swModel.ClearSelection();
             //swSubFeature.Select(false);
-            //swModel.EditDelete();
+            //_swModel.EditDelete();
             SelectSketch();
-            swModel.EditDelete();
+            _swModel.EditDelete();
 
             btnBuild.Enabled = true;
             btnClear.Enabled = false;
@@ -58,28 +57,28 @@ namespace lab7
 
         private Feature FeatureCutDepthBack(double depth)
         {
-            return swModel.FeatureManager.FeatureCut2(true, true, false, (int)swEndConditions_e.swEndCondBlind, (int)swEndConditions_e.swEndCondBlind,
+            return _swModel.FeatureManager.FeatureCut2(true, true, false, (int)swEndConditions_e.swEndCondBlind, (int)swEndConditions_e.swEndCondBlind,
                 depth, 0, false, false, false, false, 0, 0, false, false, false, false, false,
                 false, false, false, false, false);
         }
 
         private Feature FeatureCutDepthFront(double depth)
         {
-            return swModel.FeatureManager.FeatureCut2(true, false, false, (int)swEndConditions_e.swEndCondBlind, (int)swEndConditions_e.swEndCondBlind,
+            return _swModel.FeatureManager.FeatureCut2(true, false, false, (int)swEndConditions_e.swEndCondBlind, (int)swEndConditions_e.swEndCondBlind,
                 depth, 0, false, false, false, false, 0, 0, false, false, false, false, false,
                 false, false, false, false, false);
         }
 
         private Feature FeatureCutThrough()
         {
-            return swModel.FeatureManager.FeatureCut2(true, false, false, (int)swEndConditions_e.swEndCondThroughAllBoth, (int)swEndConditions_e.swEndCondThroughAllBoth,
+            return _swModel.FeatureManager.FeatureCut2(true, false, false, (int)swEndConditions_e.swEndCondThroughAllBoth, (int)swEndConditions_e.swEndCondThroughAllBoth,
                 0, 0, false, false, false, false, 0, 0, false, false, false, false, false,
                 false, false, false, false, false);
         }
 
         private Feature FeatureExtrusionBack(double depth)
         {
-            return swModel.FeatureManager.FeatureExtrusion2(true, false, true,
+            return _swModel.FeatureManager.FeatureExtrusion2(true, false, true,
                 (int)swEndConditions_e.swEndCondBlind, (int)swEndConditions_e.swEndCondBlind,
                 depth, 0, false, false, false, false, 0, 0, false, false, false, false, true,
                 true, true, 0, 0, false);
@@ -87,7 +86,7 @@ namespace lab7
 
         private Feature FeatureExtrusionBoth(double depth)
         {
-            return swModel.FeatureManager.FeatureExtrusion2(false, true, false,
+            return _swModel.FeatureManager.FeatureExtrusion2(false, true, false,
                 (int)swEndConditions_e.swEndCondBlind, (int)swEndConditions_e.swEndCondBlind,
                 depth / 2, depth / 2, false, false, false, false, 0, 0, false, false, false, false, true,
                 true, true, 0, 0, false);
@@ -95,7 +94,7 @@ namespace lab7
 
         private Feature FeatureExtrusionFront(double depth)
         {
-            return swModel.FeatureManager.FeatureExtrusion2(true, false, false,
+            return _swModel.FeatureManager.FeatureExtrusion2(true, false, false,
                 (int)swEndConditions_e.swEndCondBlind, (int)swEndConditions_e.swEndCondBlind,
                 depth, 0, false, false, false, false, 0, 0, false, false, false, false, true,
                 true, true, 0, 0, false);
@@ -109,31 +108,31 @@ namespace lab7
 
         private void CheckDrawing()
         {
-            //if (swApp.ActiveDoc == null)
+            //if (_swApp.ActiveDoc == null)
             //{
-            //    swModel = (ModelDoc2)swApp.INewPart();
-            //    swModel.SetUnits((short)swLengthUnit_e.swMM, (short)swFractionDisplay_e.swDECIMAL, 0, 0, false);
-            //    skm = swModel.SketchManager;
+            //    _swModel = (ModelDoc2)_swApp.INewPart();
+            //    _swModel.SetUnits((short)swLengthUnit_e.swMM, (short)swFractionDisplay_e.swDECIMAL, 0, 0, false);
+            //    _skm = _swModel.SketchManager;
             //}
             //else
             //{
-            //    swModel = (ModelDoc2)swApp.ActiveDoc;
-            //    swModel.SetUnits((short)swLengthUnit_e.swMM, (short)swFractionDisplay_e.swDECIMAL, 0, 0, false);
-            //    skm = swModel.SketchManager;
+            //    _swModel = (ModelDoc2)_swApp.ActiveDoc;
+            //    _swModel.SetUnits((short)swLengthUnit_e.swMM, (short)swFractionDisplay_e.swDECIMAL, 0, 0, false);
+            //    _skm = _swModel.SketchManager;
             //}
-            if (!TryGetSolidworksApp(out this.swApp))
+            if (!TryGetSolidworksApp(out this._swApp))
             {
                 MessageBox.Show("SolidWorks не запущен");
                 return;
             }
 
-            if (!TryGetSolidWorksDocument(this.swApp, out this.swModel))
+            if (!TryGetSolidWorksDocument(this._swApp, out this._swModel))
             {
                 MessageBox.Show("Проект не открыт либо выбран неправильный тип документа");
                 return;
             }
 
-            if (!TryGetSolidWorksSketchManager(this.swModel, out this.skm))
+            if (!TryGetSolidWorksSketchManager(this._swModel, out this._skm))
             {
                 MessageBox.Show("Не удается получить доступ к эскизу");
             }
@@ -179,11 +178,11 @@ namespace lab7
         {
             try
             {
-                Spc2 = Convert.ToDouble(nmrcUpDownMargin.Value) / ChangeUnit;
+                _marginInner = Convert.ToDouble(nmrcUpDownMargin.Value) / ChangeUnit;
                 _marginOutX = Convert.ToDouble(nmrcUpDownMarginX.Value) / ChangeUnit;
                 _marginOutY = Convert.ToDouble(nmrcUpDownMarginY.Value) / ChangeUnit;
 
-                if (Spc2 < 0 || _marginOutX < 0 || _marginOutY < 0) throw new ArgumentException("Отступ меньше нуля");
+                if (_marginInner < 0 || _marginOutX < 0 || _marginOutY < 0) throw new ArgumentException("Отступ меньше нуля");
 
                 _count = Convert.ToUInt32(nmrcUpDownIters.Value);
                 _startCount = Convert.ToUInt32(nmrcUpDownFirstIter.Value);
@@ -192,52 +191,35 @@ namespace lab7
                 if (_startCount == 0 || _count == 0) throw new ArgumentException("Параметры итераций не могут быть равны нулю");
                 if (_startCount > _count) throw new ArgumentException("Начальная итерация не может быть больше конечной");
 
-                _p1X = Convert.ToDouble(nmrcUpDownP1x.Value);
-                _p1Y = Convert.ToDouble(nmrcUpDownP1y.Value);
-                _p1Z = Convert.ToDouble(nmrcUpDownP1z.Value);
-
-                _p7X = Convert.ToDouble(nmrcUpDownP7x.Value);
-                _p7Y = Convert.ToDouble(nmrcUpDownP7y.Value);
-                _p7Z = Convert.ToDouble(nmrcUpDownP7z.Value);
-
-                if (_p7Z < _p1Z)
+                if (nmrcUpDownP7z.Value < nmrcUpDownP1z.Value)
                 {
                     _p1X = Convert.ToDouble(nmrcUpDownP7x.Value);
                     _p1Z = Convert.ToDouble(nmrcUpDownP7z.Value);
                     _p7X = Convert.ToDouble(nmrcUpDownP1x.Value);
                     _p7Z = Convert.ToDouble(nmrcUpDownP1z.Value);
                 }
+                else
+                {
+                    _p1X = Convert.ToDouble(nmrcUpDownP1x.Value);
+                    _p1Z = Convert.ToDouble(nmrcUpDownP1z.Value);
+                    _p7X = Convert.ToDouble(nmrcUpDownP7x.Value);
+                    _p7Z = Convert.ToDouble(nmrcUpDownP7z.Value);
+                }
 
-                _p1X /= ChangeUnit;
-                _p1Y /= ChangeUnit;
-                _p1Z /= ChangeUnit;
-                _p7X /= ChangeUnit;
-                _p7Y /= ChangeUnit;
-                _p7Z /= ChangeUnit;
-
-                length = _p7X;
-                textBox1.Text = (length * ChangeUnit).ToString();
-                width = Math.Abs(_p7Z - _p1Z);
-                textBox2.Text = (width * ChangeUnit).ToString();
-                height = Math.Abs(_p7Y - _p1Y);
-                textBox3.Text = (height * ChangeUnit).ToString();
-
-                //цент.точка нахождение
-                double centerX = (_p1X + _p7X) / 2.0;
-                double centerY = _p7Y;
-                double centerZ = (_p1Z + _p7Z) / 2.0;
-
+                _p1Y = Convert.ToDouble(nmrcUpDownP1y.Value);
+                _p7Y = Convert.ToDouble(nmrcUpDownP7y.Value);
+                
                 dataGridView1.Rows.Clear();
 
-                dataGridView1.Rows.Add(_p1X * 1000, _p1Y * 1000, _p1Z * 1000); //P1
-                dataGridView1.Rows.Add(_p1X * 1000, _p7Y * 1000, _p1Z * 1000);
-                dataGridView1.Rows.Add(_p1X * 1000, _p7Y * 1000, _p7Z * 1000);
-                dataGridView1.Rows.Add(_p1X * 1000, _p1Y * 1000, _p7Z * 1000);
+                dataGridView1.Rows.Add(_p1X, _p1Y, _p1Z); //P1
+                dataGridView1.Rows.Add(_p1X, _p7Y, _p1Z);
+                dataGridView1.Rows.Add(_p1X, _p7Y, _p7Z);
+                dataGridView1.Rows.Add(_p1X, _p1Y, _p7Z);
 
-                dataGridView1.Rows.Add(_p7X * 1000, _p1Y * 1000, _p1Z * 1000);
-                dataGridView1.Rows.Add(_p7X * 1000, _p7Y * 1000, _p1Z * 1000);
-                dataGridView1.Rows.Add(_p7X * 1000, _p7Y * 1000, _p7Z * 1000); //P7
-                dataGridView1.Rows.Add(_p7X * 1000, _p1Y * 1000, _p7Z * 1000);
+                dataGridView1.Rows.Add(_p7X, _p1Y, _p1Z);
+                dataGridView1.Rows.Add(_p7X, _p7Y, _p1Z);
+                dataGridView1.Rows.Add(_p7X, _p7Y, _p7Z); //P7
+                dataGridView1.Rows.Add(_p7X, _p1Y, _p7Z);
 
                 dataGridView1.RowHeadersDefaultCellStyle.NullValue = "";
                 dataGridView1.Rows[0].HeaderCell.Value = "P1";
@@ -248,6 +230,25 @@ namespace lab7
                 dataGridView1.Rows[5].HeaderCell.Value = "P6";
                 dataGridView1.Rows[6].HeaderCell.Value = "P7";
                 dataGridView1.Rows[7].HeaderCell.Value = "P8";
+                
+                _p1X /= ChangeUnit;
+                _p1Y /= ChangeUnit;
+                _p1Z /= ChangeUnit;
+                _p7X /= ChangeUnit;
+                _p7Y /= ChangeUnit;
+                _p7Z /= ChangeUnit;
+                
+                length = _p7X;
+                textBox1.Text = (length * ChangeUnit).ToString();
+                width = Math.Abs(_p7Z - _p1Z);
+                textBox2.Text = (width * ChangeUnit).ToString();
+                height = Math.Abs(_p7Y - _p1Y);
+                textBox3.Text = (height * ChangeUnit).ToString();
+
+                //цент.точка нахождение
+                var centerX = (_p1X + _p7X) / 2.0;
+                var centerY = _p7Y;
+                var centerZ = (_p1Z + _p7Z) / 2.0;
 
                 iters = new int[_count + 1];
             }
@@ -266,32 +267,32 @@ namespace lab7
             // SelectPlane(TopView);
 
             // Создаем точки
-            skm.Insert3DSketch(true);
-            SketchPoint point1 = skm.CreatePoint(p1X, p1Y, p1Z); // P1
-            SketchPoint point2 = skm.CreatePoint(p1X, p7Y, p1Z);
-            SketchPoint point3 = skm.CreatePoint(p1X, p7Y, p7Z);
-            SketchPoint point4 = skm.CreatePoint(p1X, p1Y, p7Z);
-            SketchPoint point5 = skm.CreatePoint(p7X, p1Y, p1Z);
-            SketchPoint point6 = skm.CreatePoint(p7X, p7Y, p1Z);
-            SketchPoint point7 = skm.CreatePoint(p7X, p7Y, p7Z); // P7
-            SketchPoint point8 = skm.CreatePoint(p7X, p1Y, p7Z);
-            SketchPoint center = skm.CreatePoint((p1X + p7X) / 2, p7Y, (p1Z + p7Z) / 2);
+            _skm.Insert3DSketch(true);
+            SketchPoint point1 = _skm.CreatePoint(p1X, p1Y, p1Z); // P1
+            SketchPoint point2 = _skm.CreatePoint(p1X, p7Y, p1Z);
+            SketchPoint point3 = _skm.CreatePoint(p1X, p7Y, p7Z);
+            SketchPoint point4 = _skm.CreatePoint(p1X, p1Y, p7Z);
+            SketchPoint point5 = _skm.CreatePoint(p7X, p1Y, p1Z);
+            SketchPoint point6 = _skm.CreatePoint(p7X, p7Y, p1Z);
+            SketchPoint point7 = _skm.CreatePoint(p7X, p7Y, p7Z); // P7
+            SketchPoint point8 = _skm.CreatePoint(p7X, p1Y, p7Z);
+            SketchPoint center = _skm.CreatePoint((p1X + p7X) / 2, p7Y, (p1Z + p7Z) / 2);
 
-            swModel.ClearSelection();
-            skm.Insert3DSketch(true);
-            swModel.ClearSelection();
+            _swModel.ClearSelection();
+            _skm.Insert3DSketch(true);
+            _swModel.ClearSelection();
             point7.Select(true);
             point6.Select(true);
             point2.Select(true);
-            swModel.CreatePlaneThru3Points();
+            _swModel.CreatePlaneThru3Points();
 
-            swModel.ClearSelection();
+            _swModel.ClearSelection();
         }
 
         private void Drawing()
         {
-            swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swInputDimValOnCreate, false);
-            swModel.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swDisplayAnnotations, true);
+            _swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swInputDimValOnCreate, false);
+            _swModel.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swDisplayAnnotations, true);
 
             for (int i = 1; i <= _count; i++)
             {
@@ -301,7 +302,7 @@ namespace lab7
             for (uint i = _startCount; i <= _count; i += _step)
             {
                 SelectPlane();
-                skm.InsertSketch(false);
+                _skm.InsertSketch(false);
                 if (i % 2 == 0)
                 {
                     EvenTriangle(i);
@@ -315,27 +316,27 @@ namespace lab7
                 feature.Select(false);
                 Feature swSubFeature = feature.GetFirstSubFeature() as Feature;
 
-                swModel.EditDelete();
-                swModel.ClearSelection();
+                _swModel.EditDelete();
+                _swModel.ClearSelection();
                 swSubFeature.Select(false);
-                swModel.EditDelete();
+                _swModel.EditDelete();
             }
-            swModel.ClearSelection();
+            _swModel.ClearSelection();
         }
 
         private void SelectPlane(string name)
         {
-            swModel.Extension.SelectByID2(name, "PLANE", 0, 0, 0, false, 0, null, 0);
+            _swModel.Extension.SelectByID2(name, "PLANE", 0, 0, 0, false, 0, null, 0);
         }
 
         private void SelectPlane()
         {
-            swModel.Extension.SelectByID2("", "PLANE", _p7X, _p7Y, _p1Z, false, 0, null, 0);
+            _swModel.Extension.SelectByID2("", "PLANE", _p7X, _p7Y, _p1Z, false, 0, null, 0);
         }
 
         private void SelectSketch()
         {
-            swModel.Extension.SelectByID2("", "SKETCH", _p1X, _p7Y, _p7Z, false, 0, null, 0);
+            _swModel.Extension.SelectByID2("", "SKETCH", _p1X, _p7Y, _p7Z, false, 0, null, 0);
         }
 
         private void OddTriangle(uint count)
@@ -350,56 +351,56 @@ namespace lab7
             {
                 case 1:
                     double lenMLine = length - 2 * _marginOutX;
-                    double lMline = width - 2 * _marginOutY;
+                    double heightLine = width - 2 * _marginOutY;
 
-                    if (lMline < 2 / ChangeUnit || lenMLine < 2 / ChangeUnit)
+                    if (heightLine < 2 / ChangeUnit || lenMLine < 2 / ChangeUnit)
                     {
-                        swModel.ClearSelection();
+                        _swModel.ClearSelection();
                         SelectSketch();
-                        swModel.EditDelete();
+                        _swModel.EditDelete();
 
                         btnBuild.Enabled = true;
                         btnClear.Enabled = false;
                         throw new ArgumentException("Неверные отступы");
                     }
 
-                    var mLine = skm.CreateLine(xMin, yMax - lMline, 0, xMax, yMax - lMline, 0);
-                    var line1 = skm.CreateLine(xMin, yMax - lMline, 0, (xMax + xMin) / 2, yMax, 0);
-                    var line2 = skm.CreateLine(xMax, yMax - lMline, 0, (xMax + xMin) / 2, yMax, 0);
+                    var mLine = _skm.CreateLine(xMin, yMax - heightLine, 0, xMax, yMax - heightLine, 0);
+                    var line1 = _skm.CreateLine(xMin, yMax - heightLine, 0, (xMax + xMin) / 2, yMax, 0);
+                    var line2 = _skm.CreateLine(xMax, yMax - heightLine, 0, (xMax + xMin) / 2, yMax, 0);
 
                     feature = FeatureCutDepthFront(height);
 
                     break;
 
                 default:
-                    lMline = (width - 2 * _marginOutY - Spc2 * (iters[count] - 2)) / ((count - 1) / 2);
-                    double lKat = lMline / 2;
+                    heightLine = (width - 2 * _marginOutY - _marginInner * (iters[count] - 2)) / ((count - 1) / 2);
+                    double heightLeg = heightLine / 2;
 
-                    if (Math.Abs(lKat) < 1 / ChangeUnit || 3.62 * Spc2 >= Math.Abs(length))
+                    if (Math.Abs(heightLeg) < 1 / ChangeUnit || 3.62 * _marginInner >= Math.Abs(length))
                     {
-                        swModel.ClearSelection();
+                        _swModel.ClearSelection();
                         SelectSketch();
-                        swModel.EditDelete();
+                        _swModel.EditDelete();
 
                         btnBuild.Enabled = true;
                         btnClear.Enabled = false;
                         throw new ArgumentException("Неверные отступы");
                     }
 
-                    var kat11 = skm.CreateLine(xMin, yMax, 0, xMax, yMax, 0);
-                    var kat12 = skm.CreateLine(xMax, yMax, 0, xMax, yMax - lKat, 0);
-                    var hip1 = skm.CreateLine(xMin, yMax, 0, xMax, yMax - lKat, 0);
+                    var kat11 = _skm.CreateLine(xMin, yMax, 0, xMax, yMax, 0);
+                    var kat12 = _skm.CreateLine(xMax, yMax, 0, xMax, yMax - heightLeg, 0);
+                    var hip1 = _skm.CreateLine(xMin, yMax, 0, xMax, yMax - heightLeg, 0);
 
                     for (int i = 1; i <= (count - 1) / 2; i++)
                     {
-                        var mLineL = skm.CreateLine(xMin, yMax - Spc2, 0, xMin, yMax - Spc2 - lMline, 0);
-                        var line1L = skm.CreateLine(xMin, yMax - Spc2, 0, xMax, yMax - lKat - Spc2, 0);
-                        var line2L = skm.CreateLine(xMin, yMax - Spc2 - lMline, 0, xMax, yMax - lKat - Spc2, 0);
+                        var mLineL = _skm.CreateLine(xMin, yMax - _marginInner, 0, xMin, yMax - _marginInner - heightLine, 0);
+                        var line1L = _skm.CreateLine(xMin, yMax - _marginInner, 0, xMax, yMax - heightLeg - _marginInner, 0);
+                        var line2L = _skm.CreateLine(xMin, yMax - _marginInner - heightLine, 0, xMax, yMax - heightLeg - _marginInner, 0);
 
                         ModifyValue(ref yMax);
                         void ModifyValue(ref double val)
                         {
-                            val = yMax - 2 * Spc2 - lMline;
+                            val = yMax - 2 * _marginInner - heightLine;
                         }
                     }
                     if (_p1Z > 0) yMax = -(_p1Z + _marginOutY);
@@ -407,21 +408,21 @@ namespace lab7
 
                     for (int i = 1; i <= (count - 3) / 2; i++)
                     {
-                        var mLineR = skm.CreateLine(xMax, yMax - 2 * Spc2 - lKat, 0, xMax, yMax - 2 * Spc2 - lKat - lMline, 0);
-                        var line1R = skm.CreateLine(xMax, yMax - 2 * Spc2 - lKat, 0, xMin, yMax - 2 * Spc2 - lMline, 0);
-                        var line2R = skm.CreateLine(xMax, yMax - 2 * Spc2 - lKat - lMline, 0, xMin, yMax - 2 * Spc2 - lMline, 0);
+                        var mLineR = _skm.CreateLine(xMax, yMax - 2 * _marginInner - heightLeg, 0, xMax, yMax - 2 * _marginInner - heightLeg - heightLine, 0);
+                        var line1R = _skm.CreateLine(xMax, yMax - 2 * _marginInner - heightLeg, 0, xMin, yMax - 2 * _marginInner - heightLine, 0);
+                        var line2R = _skm.CreateLine(xMax, yMax - 2 * _marginInner - heightLeg - heightLine, 0, xMin, yMax - 2 * _marginInner - heightLine, 0);
 
                         ModifyValue(ref yMax);
                         void ModifyValue(ref double val)
                         {
-                            val = yMax - 2 * Spc2 - lMline;
+                            val = yMax - 2 * _marginInner - heightLine;
                         }
                     }
-                    yMax = yMax - 2 * Spc2 - lKat;
+                    yMax = yMax - 2 * _marginInner - heightLeg;
 
-                    var kat21 = skm.CreateLine(xMin, yMax - lKat, 0, xMax, yMax - lKat, 0);
-                    var kat22 = skm.CreateLine(xMax, yMax, 0, xMax, yMax - lKat, 0);
-                    var hip2 = skm.CreateLine(xMax, yMax, 0, xMin, yMax - lKat, 0);
+                    var kat21 = _skm.CreateLine(xMin, yMax - heightLeg, 0, xMax, yMax - heightLeg, 0);
+                    var kat22 = _skm.CreateLine(xMax, yMax, 0, xMax, yMax - heightLeg, 0);
+                    var hip2 = _skm.CreateLine(xMax, yMax, 0, xMin, yMax - heightLeg, 0);
 
                     feature = FeatureCutDepthFront(height);
                     break;
@@ -442,13 +443,13 @@ namespace lab7
                     if (_p1Z > 0) yMax = -(_p1Z + _marginOutY);
                     else yMax = Math.Abs(_p1Z) - _marginOutY;
 
-                    double lKat = (width - 2 * _marginOutY - Spc2 * (iters[count] - 2)) / (count / 2);
+                    double heightLeg = (width - 2 * _marginOutY - _marginInner * (iters[count] - 2)) / (count / 2);
 
-                    if (Math.Abs(lKat) < 1 / ChangeUnit || 3.62 * Spc2 >= Math.Abs(length))
+                    if (Math.Abs(heightLeg) < 1 / ChangeUnit || 3.62 * _marginInner >= Math.Abs(length))
                     {
-                        swModel.ClearSelection();
+                        _swModel.ClearSelection();
                         SelectSketch();
-                        swModel.EditDelete();
+                        _swModel.EditDelete();
 
                         btnBuild.Enabled = true;
                         btnClear.Enabled = false;
@@ -457,18 +458,18 @@ namespace lab7
 
                     for (uint i = count; i != 0; i -= 2)
                     {
-                        var kat11 = skm.CreateLine(xMin, yMax, 0, xMax, yMax, 0);
-                        var kat12 = skm.CreateLine(xMax, yMax, 0, xMax, yMax - lKat, 0);
-                        var hip1 = skm.CreateLine(xMin, yMax, 0, xMax, yMax - lKat, 0);
+                        var kat11 = _skm.CreateLine(xMin, yMax, 0, xMax, yMax, 0);
+                        var kat12 = _skm.CreateLine(xMax, yMax, 0, xMax, yMax - heightLeg, 0);
+                        var hip1 = _skm.CreateLine(xMin, yMax, 0, xMax, yMax - heightLeg, 0);
 
-                        var kat21 = skm.CreateLine(xMin, yMax - Spc2, 0, xMin, yMax - Spc2 - lKat, 0);
-                        var kat22 = skm.CreateLine(xMin, yMax - Spc2 - lKat, 0, xMax, yMax - Spc2 - lKat, 0);
-                        var hip2 = skm.CreateLine(xMin, yMax - Spc2, 0, xMax, yMax - Spc2 - lKat, 0);
+                        var kat21 = _skm.CreateLine(xMin, yMax - _marginInner, 0, xMin, yMax - _marginInner - heightLeg, 0);
+                        var kat22 = _skm.CreateLine(xMin, yMax - _marginInner - heightLeg, 0, xMax, yMax - _marginInner - heightLeg, 0);
+                        var hip2 = _skm.CreateLine(xMin, yMax - _marginInner, 0, xMax, yMax - _marginInner - heightLeg, 0);
 
                         ModifyValue(ref yMax);
                         void ModifyValue(ref double val)
                         {
-                            val = yMax - 2 * Spc2 - lKat;
+                            val = yMax - 2 * _marginInner - heightLeg;
                         }
                     }
                     feature = FeatureCutDepthFront(height);

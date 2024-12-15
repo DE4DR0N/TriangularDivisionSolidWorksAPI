@@ -445,7 +445,7 @@
             this.nmrcUpDownP1x.Name = "nmrcUpDownP1x";
             this.nmrcUpDownP1x.Size = new System.Drawing.Size(100, 30);
             this.nmrcUpDownP1x.TabIndex = 44;
-            this.nmrcUpDownP1x.Value = new decimal(new int[] { 325, 0, 0, 65536 });
+            this.nmrcUpDownP1x.Value = new decimal(new int[] { 325, 0, 0, -2147418112 });
             // 
             // nmrcUpDownP1y
             // 
@@ -471,7 +471,7 @@
             this.nmrcUpDownP1z.Name = "nmrcUpDownP1z";
             this.nmrcUpDownP1z.Size = new System.Drawing.Size(100, 30);
             this.nmrcUpDownP1z.TabIndex = 46;
-            this.nmrcUpDownP1z.Value = new decimal(new int[] { 25, 0, 0, -2147418112 });
+            this.nmrcUpDownP1z.Value = new decimal(new int[] { 475, 0, 0, -2147418112 });
             // 
             // nmrcUpDownP7x
             // 
@@ -484,7 +484,7 @@
             this.nmrcUpDownP7x.Name = "nmrcUpDownP7x";
             this.nmrcUpDownP7x.Size = new System.Drawing.Size(100, 30);
             this.nmrcUpDownP7x.TabIndex = 47;
-            this.nmrcUpDownP7x.Value = new decimal(new int[] { 325, 0, 0, -2147418112 });
+            this.nmrcUpDownP7x.Value = new decimal(new int[] { 325, 0, 0, 65536 });
             // 
             // nmrcUpDownP7y
             // 
@@ -510,7 +510,7 @@
             this.nmrcUpDownP7z.Name = "nmrcUpDownP7z";
             this.nmrcUpDownP7z.Size = new System.Drawing.Size(100, 30);
             this.nmrcUpDownP7z.TabIndex = 49;
-            this.nmrcUpDownP7z.Value = new decimal(new int[] { 475, 0, 0, -2147418112 });
+            this.nmrcUpDownP7z.Value = new decimal(new int[] { 25, 0, 0, -2147418112 });
             // 
             // FormMain
             // 
