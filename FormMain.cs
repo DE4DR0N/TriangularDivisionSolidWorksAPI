@@ -54,12 +54,6 @@ namespace lab7
             btnClear.Enabled = false;
         }
 
-        private void btnLab5_Click(object sender, EventArgs e)
-        {
-            FormLab5 formLab5 = new FormLab5();
-            formLab5.ShowDialog();
-        }
-
         #region Features
 
         private Feature FeatureCutDepthBack(double depth)
@@ -268,7 +262,7 @@ namespace lab7
 
         private void CreatePoints(double p1X, double p1Y, double p1Z, double p7X, double p7Y, double p7Z)
         {
-            SelectPlane(TopView);
+            // SelectPlane(TopView);
 
             // Создаем точки
             skm.Insert3DSketch(true);
