@@ -323,7 +323,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::lab7.Properties.Resources.image1;
+            this.pictureBox1.Image = global::lab7.Properties.Resources.image;
             this.pictureBox1.Location = new System.Drawing.Point(16, 15);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
