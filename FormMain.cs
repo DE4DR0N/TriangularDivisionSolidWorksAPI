@@ -16,7 +16,7 @@ namespace lab7
         private Feature skFeat;
         private Feature footing;
         private const string FrontView = "Спереди", TopView = "Сверху", RightView = "Справа";
-        private double length, width, height, Spc2, _p1X, _p1Y, _p1Z, _p7X, _p7Y, _p7Z;
+        private double length, width, height, Spc2, _marginOutX, _marginOutY, _p1X, _p1Y, _p1Z, _p7X, _p7Y, _p7Z;
         private bool res;
         private SketchManager skm;
         private SldWorks swApp;
@@ -30,7 +30,7 @@ namespace lab7
 
         private void btnBuild_Click(object sender, EventArgs e)
         {
-            if (ObtainVariables() == false) return;
+            if (!ObtainVariables()) return;
             CheckDrawing();
             CreatePoints(_p1X, _p1Y, _p1Z, _p7X, _p7Y, _p7Z);
             Drawing();
@@ -179,32 +179,33 @@ namespace lab7
         {
             try
             {
-                Spc2 = Convert.ToDouble(textBox5.Text);
-                Spc2 /= ChangeUnit;
+                Spc2 = Convert.ToDouble(nmrcUpDownMargin.Value) / ChangeUnit;
+                _marginOutX = Convert.ToDouble(nmrcUpDownMarginX.Value) / ChangeUnit;
+                _marginOutY = Convert.ToDouble(nmrcUpDownMarginY.Value) / ChangeUnit;
 
-                if (Spc2 < 0) throw new ArgumentException("Отступ меньше нуля");
+                if (Spc2 < 0 || _marginOutX < 0 || _marginOutY < 0) throw new ArgumentException("Отступ меньше нуля");
 
-                _count = Convert.ToUInt32(textBox6.Text);
-                _startCount = Convert.ToUInt32(textBox7.Text);
-                _step = Convert.ToUInt32(textBox4.Text);
+                _count = Convert.ToUInt32(nmrcUpDownIters.Value);
+                _startCount = Convert.ToUInt32(nmrcUpDownFirstIter.Value);
+                _step = Convert.ToUInt32(nmrcUpDownStep.Value);
 
                 if (_startCount == 0 || _count == 0) throw new ArgumentException("Параметры итераций не могут быть равны нулю");
                 if (_startCount > _count) throw new ArgumentException("Начальная итерация не может быть больше конечной");
 
-                _p1X = Convert.ToDouble(textBoxP1x.Text);
-                _p1Y = Convert.ToDouble(textBoxP1y.Text);
-                _p1Z = Convert.ToDouble(textBoxP1z.Text);
+                _p1X = Convert.ToDouble(nmrcUpDownP1x.Value);
+                _p1Y = Convert.ToDouble(nmrcUpDownP1y.Value);
+                _p1Z = Convert.ToDouble(nmrcUpDownP1z.Value);
 
-                _p7X = Convert.ToDouble(textBoxP7x.Text);
-                _p7Y = Convert.ToDouble(textBoxP7y.Text);
-                _p7Z = Convert.ToDouble(textBoxP7z.Text);
+                _p7X = Convert.ToDouble(nmrcUpDownP7x.Value);
+                _p7Y = Convert.ToDouble(nmrcUpDownP7y.Value);
+                _p7Z = Convert.ToDouble(nmrcUpDownP7z.Value);
 
                 if (_p7Z < _p1Z)
                 {
-                    _p1X = Convert.ToDouble(textBoxP7x.Text);
-                    _p1Z = Convert.ToDouble(textBoxP7z.Text);
-                    _p7X = Convert.ToDouble(textBoxP1x.Text);
-                    _p7Z = Convert.ToDouble(textBoxP1z.Text);
+                    _p1X = Convert.ToDouble(nmrcUpDownP7x.Value);
+                    _p1Z = Convert.ToDouble(nmrcUpDownP7z.Value);
+                    _p7X = Convert.ToDouble(nmrcUpDownP1x.Value);
+                    _p7Z = Convert.ToDouble(nmrcUpDownP1z.Value);
                 }
 
                 _p1X /= ChangeUnit;
@@ -339,23 +340,27 @@ namespace lab7
 
         private void OddTriangle(uint count)
         {
-            double xMax = length - Spc2;
-            double xMin = _p1X + Spc2;
+            double xMax = length - _marginOutX;
+            double xMin = _p1X + _marginOutX;
             double yMax;
-            if (_p1Z < 0) yMax = -(_p1Z + Spc2);
-            else yMax = Math.Abs(_p1Z) - Spc2;
+            if (_p1Z < 0) yMax = -(_p1Z + _marginOutY);
+            else yMax = Math.Abs(_p1Z) - _marginOutY;
 
             switch (count)
             {
                 case 1:
-                    double lenMLine = length - 2 * Spc2;
-                    double lMline = width - 2 * Spc2;
+                    double lenMLine = length - 2 * _marginOutX;
+                    double lMline = width - 2 * _marginOutY;
 
                     if (lMline < 2 / ChangeUnit || lenMLine < 2 / ChangeUnit)
                     {
-                        MessageBox.Show("Построение невозможно. Уменьшите отступы", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         swModel.ClearSelection();
-                        return;
+                        SelectSketch();
+                        swModel.EditDelete();
+
+                        btnBuild.Enabled = true;
+                        btnClear.Enabled = false;
+                        throw new ArgumentException("Неверные отступы");
                     }
 
                     var mLine = skm.CreateLine(xMin, yMax - lMline, 0, xMax, yMax - lMline, 0);
@@ -367,14 +372,18 @@ namespace lab7
                     break;
 
                 default:
-                    lMline = (width - Spc2 * iters[count]) / ((count - 1) / 2);
+                    lMline = (width - 2 * _marginOutY - Spc2 * (iters[count] - 2)) / ((count - 1) / 2);
                     double lKat = lMline / 2;
 
                     if (Math.Abs(lKat) < 1 / ChangeUnit || 3.62 * Spc2 >= Math.Abs(length))
                     {
-                        MessageBox.Show("Построение невозможно. Уменьшите отступы", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         swModel.ClearSelection();
-                        return;
+                        SelectSketch();
+                        swModel.EditDelete();
+
+                        btnBuild.Enabled = true;
+                        btnClear.Enabled = false;
+                        throw new ArgumentException("Неверные отступы");
                     }
 
                     var kat11 = skm.CreateLine(xMin, yMax, 0, xMax, yMax, 0);
@@ -393,8 +402,8 @@ namespace lab7
                             val = yMax - 2 * Spc2 - lMline;
                         }
                     }
-                    if (_p1Z > 0) yMax = -(_p1Z + Spc2);
-                    else yMax = Math.Abs(_p1Z) - Spc2;
+                    if (_p1Z > 0) yMax = -(_p1Z + _marginOutY);
+                    else yMax = Math.Abs(_p1Z) - _marginOutY;
 
                     for (int i = 1; i <= (count - 3) / 2; i++)
                     {
@@ -427,20 +436,23 @@ namespace lab7
                     break;
 
                 default:
-                    double xMax = length - Spc2;
-                    double xMin = _p1X + Spc2;
+                    double xMax = length - _marginOutX;
+                    double xMin = _p1X + _marginOutX;
                     double yMax;
-                    if (_p1Z > 0) yMax = -(_p1Z + Spc2);
-                    else yMax = Math.Abs(_p1Z) - Spc2; ;
+                    if (_p1Z > 0) yMax = -(_p1Z + _marginOutY);
+                    else yMax = Math.Abs(_p1Z) - _marginOutY;
 
-                    double lKat = (width - Spc2 * iters[count]) / (count / 2);
+                    double lKat = (width - 2 * _marginOutY - Spc2 * (iters[count] - 2)) / (count / 2);
 
                     if (Math.Abs(lKat) < 1 / ChangeUnit || 3.62 * Spc2 >= Math.Abs(length))
                     {
-                        MessageBox.Show("Построение невозможно. Уменьшите отступы", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         swModel.ClearSelection();
+                        SelectSketch();
+                        swModel.EditDelete();
 
-                        return;
+                        btnBuild.Enabled = true;
+                        btnClear.Enabled = false;
+                        throw new ArgumentException("Неверные отступы");
                     }
 
                     for (uint i = count; i != 0; i -= 2)
