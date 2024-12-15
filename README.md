@@ -4,6 +4,5 @@ Course Work project of application that creates the 3D model and creates triangu
 
 ## Features
 
-- Create 3D model
 - Choose the dimension of cutting
 - Choose count of triangles
